@@ -14,9 +14,16 @@ if path not in sys.path:
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'expense_project.settings')
 
+# Log environment info for debugging
+with open(os.path.join(path, 'passenger_debug.log'), 'a') as f:
+    f.write(f"\n--- Startup: {sys.version} ---\n")
+    f.write(f"Python path: {sys.path}\n")
+    f.write(f"CWD: {os.getcwd()}\n")
+
 try:
     from expense_project.wsgi import application
 except Exception:
-    with open(os.path.join(path, 'passenger_error.log'), 'w') as f:
+    with open(os.path.join(path, 'passenger_debug.log'), 'a') as f:
+        f.write("\n--- WSGI Import Failed ---\n")
         traceback.print_exc(file=f)
     raise
