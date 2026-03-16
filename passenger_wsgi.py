@@ -2,6 +2,7 @@ import os
 import sys
 import pymysql
 
+pymysql.version_info = (2, 2, 1, 'final', 0)
 pymysql.install_as_MySQLdb()
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'expense_project.settings')
