@@ -1,6 +1,7 @@
 import os
 import sys
 import pymysql
+import traceback
 
 # Mocking mysqlclient for Django compatibility
 pymysql.version_info = (2, 2, 1, 'final', 0)
@@ -13,4 +14,9 @@ if path not in sys.path:
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'expense_project.settings')
 
-from expense_project.wsgi import application
+try:
+    from expense_project.wsgi import application
+except Exception:
+    with open(os.path.join(path, 'passenger_error.log'), 'w') as f:
+        traceback.print_exc(file=f)
+    raise
