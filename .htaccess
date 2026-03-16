@@ -1,7 +1,9 @@
 # DO NOT REMOVE. CLOUDLINUX PASSENGER CONFIGURATION BEGIN
+PassengerEnabled on
 PassengerAppRoot "/home/niraulakunjan/api.expense.kunjanniraula.com.np"
 PassengerBaseURI "/"
 PassengerPython "/home/niraulakunjan/virtualenv/api.expense.kunjanniraula.com.np/3.13/bin/python"
+PassengerStartupFile passenger_wsgi.py
 # DO NOT REMOVE. CLOUDLINUX PASSENGER CONFIGURATION END
 # DO NOT REMOVE OR MODIFY. CLOUDLINUX ENV VARS CONFIGURATION BEGIN
 <IfModule Litespeed>
