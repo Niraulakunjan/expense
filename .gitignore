@@ -1,0 +1,15 @@
+frontend/
+db.sqlite3
+__pycache__/
+*.pyc
+.env
+.DS_Store
+venv/
+env/
+.agent/
+.gemini/
+.system_generated/
+brain/
+implementation_plan.md
+task.md
+walkthrough.md
