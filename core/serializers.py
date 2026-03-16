@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User
-from .models import Profile, Category, Expense, Income, Budget
+from .models import Profile, Category, Expense, Income, Budget, Loan
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
