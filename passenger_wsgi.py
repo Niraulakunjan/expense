@@ -1,29 +1,17 @@
-import os
 import sys
-import pymysql
-import traceback
+import os
 
-# Mocking mysqlclient for Django compatibility
-pymysql.version_info = (2, 2, 1, 'final', 0)
-pymysql.install_as_MySQLdb()
-
-# Ensure the project directory is in the path
-path = os.path.dirname(os.path.abspath(__file__))
-if path not in sys.path:
-    sys.path.insert(0, path)
-
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'expense_project.settings')
-
-# Log environment info for debugging
-with open(os.path.join(path, 'passenger_debug.log'), 'a') as f:
-    f.write(f"\n--- Startup: {sys.version} ---\n")
-    f.write(f"Python path: {sys.path}\n")
-    f.write(f"CWD: {os.getcwd()}\n")
-
-try:
-    from expense_project.wsgi import application
-except Exception:
-    with open(os.path.join(path, 'passenger_debug.log'), 'a') as f:
-        f.write("\n--- WSGI Import Failed ---\n")
-        traceback.print_exc(file=f)
-    raise
+# Bare minimum test application to verify if Passenger is running this file
+def application(environ, start_response):
+    status = '200 OK'
+    output = b"Hello from Passenger! If you see this, the file is being executed correctly.\n"
+    
+    # Log to a file to be 100% sure
+    path = os.path.dirname(os.path.abspath(__file__))
+    with open(os.path.join(path, 'passenger_test.log'), 'a') as f:
+        f.write("Application called successfully!\n")
+        
+    response_headers = [('Content-type', 'text/plain'),
+                        ('Content-Length', str(len(output)))]
+    start_response(status, response_headers)
+    return [output]
