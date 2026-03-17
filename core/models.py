@@ -38,6 +38,16 @@ class Category(models.Model):
     def __str__(self):
         return f"{self.name} ({self.type})"
 
+PAYMENT_METHOD_CHOICES = (
+    ('CASH', 'Cash'),
+    ('ESEWA', 'eSewa'),
+    ('KHALTI', 'Khalti'),
+    ('SIDDHARTH_QR', 'Siddharth Bank (QR)'),
+    ('GLOBAL_IME_QR', 'Global IME Bank (QR)'),
+    ('CONNECT_IPS', 'Connect IPS'),
+    ('OTHER', 'Other'),
+)
+
 class Expense(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='expenses')
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, related_name='expenses')
@@ -45,6 +55,7 @@ class Expense(models.Model):
     description = models.TextField(blank=True)
     date = models.DateField()
     receipt = models.ImageField(upload_to='receipts/', blank=True, null=True)
+    payment_method = models.CharField(max_length=20, choices=PAYMENT_METHOD_CHOICES, default='CASH')
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
@@ -56,6 +67,7 @@ class Income(models.Model):
     amount = models.DecimalField(max_digits=12, decimal_places=2)
     description = models.TextField(blank=True)
     date = models.DateField()
+    payment_method = models.CharField(max_length=20, choices=PAYMENT_METHOD_CHOICES, default='CASH')
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
