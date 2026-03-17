@@ -75,6 +75,8 @@ class Budget(models.Model):
     def __str__(self):
         return f"{self.user.username} Budget for {self.category.name} ({self.month}/{self.year})"
 
+from django.utils import timezone
+
 class Loan(models.Model):
     LOAN_TYPES = (
         ('GIVEN', 'Given (Debtor)'),
@@ -84,6 +86,7 @@ class Loan(models.Model):
     person_name = models.CharField(max_length=100)
     amount = models.DecimalField(max_digits=12, decimal_places=2)
     type = models.CharField(max_length=10, choices=LOAN_TYPES)
+    loan_date = models.DateField(default=timezone.now)
     due_date = models.DateField(null=True, blank=True)
     is_paid = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
