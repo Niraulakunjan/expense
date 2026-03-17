@@ -9,6 +9,9 @@ from .serializers import (
     UserSerializer, CategorySerializer, ExpenseSerializer, 
     IncomeSerializer, BudgetSerializer, LoanSerializer
 )
+from django.utils import timezone
+from datetime import timedelta
+from django.db.models.functions import TruncMonth
 
 class RegisterView(generics.CreateAPIView):
     queryset = User.objects.all()
@@ -75,4 +78,43 @@ class SummaryView(APIView):
             'loans_given': loans_given,
             'loans_taken': loans_taken,
             'balance': total_income - total_expense
+        })
+
+class StatisticsView(APIView):
+    def get(self, request):
+        user = request.user
+        
+        # 1. Category Breakdown (Expenses)
+        category_data = Expense.objects.filter(user=user).values('category__name', 'category__color').annotate(value=Sum('amount')).order_by('-value')
+        
+        # 2. Monthly Trends (Last 6 Months)
+        six_months_ago = timezone.now().date() - timedelta(days=180)
+        
+        monthly_expenses = Expense.objects.filter(user=user, date__gte=six_months_ago) \
+            .annotate(month=TruncMonth('date')) \
+            .values('month') \
+            .annotate(total=Sum('amount')) \
+            .order_by('month')
+            
+        monthly_income = Income.objects.filter(user=user, date__gte=six_months_ago) \
+            .annotate(month=TruncMonth('date')) \
+            .values('month') \
+            .annotate(total=Sum('amount')) \
+            .order_by('month')
+
+        # Combine trends
+        trends = {}
+        for item in monthly_expenses:
+            m = item['month'].strftime('%b %Y')
+            trends[m] = trends.get(m, {'month': m, 'expense': 0, 'income': 0})
+            trends[m]['expense'] = float(item['total'])
+            
+        for item in monthly_income:
+            m = item['month'].strftime('%b %Y')
+            trends[m] = trends.get(m, {'month': m, 'expense': 0, 'income': 0})
+            trends[m]['income'] = float(item['total'])
+
+        return Response({
+            'categories': [{'name': item['category__name'] or 'Other', 'value': float(item['value']), 'color': item['category__color']} for item in category_data],
+            'trends': sorted(trends.values(), key=lambda x: timezone.datetime.strptime(x['month'], '%b %Y').date())
         })
